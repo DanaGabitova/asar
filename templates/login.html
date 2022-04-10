@@ -1,0 +1,48 @@
+{% extends 'base.html' %} 
+ 
+{% block content %} 
+<div> 
+    <img src="js/images/asa.PNG" class="left-img">
+    <h1> Аварийный доступ</h1> 
+</div> 
+<form action="" class="login-form" method="POST" novalidate> 
+    {{ form.hidden_tag() }} 
+    <p> 
+        {{ form.astronaut_id.label }}<br> 
+        {{ form.astronaut_id(class="form-control") }}<br> 
+        {% for error in form.astronaut_id.errors %} 
+        <div class="alert alert-danger" role="alert"> 
+            {{ error }} 
+        </div> 
+        {% endfor %} 
+    </p> 
+    <p> 
+        {{ form.astronaut_pass.label }}<br> 
+        {{ form.astronaut_pass(class="form-control", type="password") }}<br> 
+        {% for error in form.astronaut_pass.errors %} 
+        <div class="alert alert-danger" role="alert"> 
+            {{ error }} 
+        </div> 
+        {% endfor %} 
+    </p> 
+    <p> 
+        {{ form.capitan_id.label }}<br> 
+        {{ form.capitan_id(class="form-control") }}<br> 
+        {% for error in form.capitan_id.errors %} 
+        <div class="alert alert-danger" role="alert"> 
+            {{ error }} 
+        </div> 
+        {% endfor %} 
+    </p> 
+    <p> 
+        {{ form.capitan_token.label }}<br> 
+        {{ form.capitan_token(class="form-control", type="password") }}<br> 
+        {% for error in form.capitan_token.errors %} 
+        <div class="alert alert-danger" role="alert"> 
+            {{ error }} 
+        </div> 
+        {% endfor %} 
+    </p> 
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p> 
+</form> 
+{% endblock %}
