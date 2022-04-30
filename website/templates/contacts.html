@@ -1,0 +1,53 @@
+{% extends 'base.html' %} 
+ 
+{% block title %}
+Contacts
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="collapse navbar-collapse" id="navbar">
+    <div class="navbar-nav">
+      <div class="logo">
+        <img src="static/img/logo.png" alt="logo" width="300" height="80">
+      </div>
+      <div class="home-btn">
+        <a id="home" href="/">
+          <input type="submit" value="Главная" />
+        </a>
+      </div>
+      <div class="about-btn">
+        <a id="about" href="/">
+          <input type="submit" value="О нас" />
+        </a>
+      </div>
+      <div class="contacts-btn">
+        <a id="contacts" href="/">
+          <input type="submit" value="Контакты" />
+        </a>
+      </div>
+      <div class="enter-btn">
+        <a id="enter" href="/login">
+          <input type="submit" value="Войти" />
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="contacts-block">
+  <center>
+    <h1>Контакты</h1>
+  </center>
+  <img src="static/img/contacts.png" alt="Contacts" width="1200">
+</div>
+<div class="end-block-contacts">
+    <center>
+        <div class="tech">
+            По техническим вопросам обращаться по этому номеру: ХХХХХХХХХХХ
+        </div>     
+    </center>
+</div>
+{% endblock %}
