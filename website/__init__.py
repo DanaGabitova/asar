@@ -30,6 +30,6 @@ def create_app():
 
 
 def create_database(app):
-    if not path.exists('website/' + DB_NAME):
+    if not path.exists(f'website/{os.getenv("DB_NAME")}'):
         db.create_all(app=app)
         print('Created Database!')
