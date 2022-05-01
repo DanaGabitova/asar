@@ -48,7 +48,8 @@ def sign_up():
         password2 = request.form.get('password2')
         user = User.query.filter_by(email=email).first()
         if user:
-            flash('Пользователь с таким именем уже существует.', category='error')
+            flash('Пользователь с таким именем уже существует.',
+                  category='error')
         elif len(email) < 4:
             flash('Логин должен иметь более 3 символов.', category='error')
         elif len(first_name) < 2:
@@ -56,14 +57,20 @@ def sign_up():
         elif password1 != password2:
             flash('Пароли не совпадают.', category='error')
         elif len(password1) < 7:
-            flash('Пароль должен иметь как минимум 7 символов.', category='error')
+            flash('Пароль должен иметь как минимум 7 символов.',
+                  category='error')
         else:
-            new_user = User(email=email, first_name=first_name, 
-                            last_name=last_name, address=address, 
-                            phone=phone, password=generate_password_hash(password1, 
-                                                                         method='sha256'), ban=False)
+            new_user = User(email=email, 
+                            first_name=first_name,
+                            last_name=last_name, 
+                            address=address,
+                            phone=phone,
+                            password=generate_password_hash(password1, 
+                                                            method='sha256'), 
+                            ban=False)
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
             return redirect(url_for('views.home'))
     return render_template("sign_up.html", user=current_user)
+
