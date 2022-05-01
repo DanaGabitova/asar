@@ -15,13 +15,16 @@ def login():
         password = request.form.get('password')
         admin = Admin.query.filter_by(email=email).first()
         user = User.query.filter_by(email=email).first()
-        if admin:
-            if admin.password == password:
-                return redirect(url_for('views.admin'))
         if user:
             if check_password_hash(user.password, password):
                 login_user(user, remember=True)
                 return redirect(url_for('views.home'))
+            else:
+                flash('Неверный пароль. Попробуйте ещё раз.', category='error')
+        elif admin:
+            if check_password_hash(admin.password, password):
+                login_user(admin, remember=True)
+                return redirect(url_for('views.admin'))
             else:
                 flash('Неверный пароль. Попробуйте ещё раз.', category='error')
         else:
@@ -36,37 +39,39 @@ def logout():
     return redirect(url_for('views.index'))
 
 
+def check_user(user, email, first_name, password1, password2):
+    if user:
+        flash('Пользователь с такой почтой уже существует.', category='error')
+        return "error"
+    elif len(email) < 4:
+        flash('Логин должен иметь более 3 символов.', category='error')
+        return "error"
+    elif len(first_name) < 2:
+        flash('Имя должно иметь более 1 символа.', category='error')
+        return "error"
+    elif password1 != password2:
+        flash('Пароли не совпадают.', category='error')
+        return "error"
+    elif len(password1) < 7:
+        flash('Пароль должен иметь как минимум 7 символов.', category='error')
+        return "error"
+    return "ok"
+
+
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
         email = request.form.get('email')
         first_name = request.form.get('firstName')
         last_name = request.form.get('lastName')
-        address = request.form.get('address')
-        phone = request.form.get('phone')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
         user = User.query.filter_by(email=email).first()
-        if user:
-            flash('Пользователь с таким именем уже существует.',
-                  category='error')
-        elif len(email) < 4:
-            flash('Логин должен иметь более 3 символов.', category='error')
-        elif len(first_name) < 2:
-            flash('Имя должно иметь более 1 символа.', category='error')
-        elif password1 != password2:
-            flash('Пароли не совпадают.', category='error')
-        elif len(password1) < 7:
-            flash('Пароль должен иметь как минимум 7 символов.',
-                  category='error')
-        else:
-            new_user = User(email=email, 
+        if check_user(user, email, first_name, password1, password2) == "ok":
+            new_user = User(email=email,
+                            password=generate_password_hash(password1, method='sha256'),
                             first_name=first_name,
-                            last_name=last_name, 
-                            address=address,
-                            phone=phone,
-                            password=generate_password_hash(password1, 
-                                                            method='sha256'), 
+                            last_name=last_name,
                             ban=False)
             db.session.add(new_user)
             db.session.commit()
