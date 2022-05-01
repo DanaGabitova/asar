@@ -1,17 +1,17 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
+from dotenv import load_dotenv
 from flask_login import LoginManager
 
 
 db = SQLAlchemy()
-DB_NAME = "database.db"
 
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_pyfile('settings.py')
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SECRET_KEY'] = f'{os.getenv("SECRET_KEY")}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.getenv("DB_NAME")}'
     db.init_app(app)
     from .views import views
     from .auth import auth
