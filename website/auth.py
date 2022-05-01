@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import User
+from .models import User, Admin
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -13,18 +13,19 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        if email == 'admin@bk.ru' and password == 'admin':
-            return redirect(url_for('views.admin'))
-        else:
-            user = User.query.filter_by(email=email).first()
-            if user:
-                if check_password_hash(user.password, password):
-                    login_user(user, remember=True)
-                    return redirect(url_for('views.home'))
-                else:
-                    flash('Неверный пароль. Попробуйте ещё раз.', category='error')
+        admin = Admin.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
+        if admin:
+            if admin.password == password:
+                return redirect(url_for('views.admin'))
+        if user:
+            if check_password_hash(user.password, password):
+                login_user(user, remember=True)
+                return redirect(url_for('views.home'))
             else:
-                flash('Пользователь не найден.', category='error')
+                flash('Неверный пароль. Попробуйте ещё раз.', category='error')
+        else:
+            flash('Пользователь не найден.', category='error')
     return render_template("login.html", user=current_user)
 
 
@@ -57,10 +58,10 @@ def sign_up():
         elif len(password1) < 7:
             flash('Пароль должен иметь как минимум 7 символов.', category='error')
         else:
-            new_user = User(email=email, first_name=first_name,
-                            last_name=last_name, address=address,
-                            phone=phone, password=generate_password_hash(password1,
-                                                                         method='sha256'))
+            new_user = User(email=email, first_name=first_name, 
+                            last_name=last_name, address=address, 
+                            phone=phone, password=generate_password_hash(password1, 
+                                                                         method='sha256'), ban=False)
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
