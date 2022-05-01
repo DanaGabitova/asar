@@ -210,3 +210,31 @@ div.note-block {
 div.note-area textarea {
 	margin-top: 10px;
 }
+
+div.all-req-btn input {
+	position: absolute;
+	right: 450px;
+	top: 50px;
+	font-size: 17px;
+	background-color: white;
+	border-color: white;
+	border-width: 0px;
+}
+
+div.all-req-btn input:hover {
+	opacity: 0.5;
+}
+
+div.users-btn input {
+	position: absolute;
+	right: 250px;
+	top: 50px;
+	font-size: 17px;
+	background-color: white;
+	border-color: white;
+	border-width: 0px;
+}
+
+div.users-btn input:hover {
+	opacity: 0.5;
+}
