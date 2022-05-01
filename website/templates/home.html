@@ -45,4 +45,9 @@ Home
 <center>
   <h1>Forum</h1>
 </center>
+{% for note in notes %}
+<li class="list-group-item">
+  {{ note }}
+</li>
+{% endfor %}
 {% endblock %}
