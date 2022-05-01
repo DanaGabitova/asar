@@ -41,20 +41,15 @@ def logout():
 
 def check_user(user, email, first_name, password1, password2):
     if user:
-        flash('Пользователь с такой почтой уже существует.', category='error')
-        return "error"
+        return "Пользователь с такой почтой уже существует."
     elif len(email) < 4:
-        flash('Логин должен иметь более 3 символов.', category='error')
-        return "error"
+        return "Логин должен иметь более 3 символов."
     elif len(first_name) < 2:
-        flash('Имя должно иметь более 1 символа.', category='error')
-        return "error"
+        return "Имя должно иметь более 1 символа."
     elif password1 != password2:
-        flash('Пароли не совпадают.', category='error')
-        return "error"
+        return "Пароли не совпадают."
     elif len(password1) < 7:
-        flash('Пароль должен иметь как минимум 7 символов.', category='error')
-        return "error"
+        return "Пароль должен иметь как минимум 7 символов."
     return "ok"
 
 
@@ -67,7 +62,8 @@ def sign_up():
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
         user = User.query.filter_by(email=email).first()
-        if check_user(user, email, first_name, password1, password2) == "ok":
+        message = check_user(user, email, first_name, password1, password2)
+        if message == "ok":
             new_user = User(email=email,
                             password=generate_password_hash(password1, method='sha256'),
                             first_name=first_name,
@@ -77,5 +73,6 @@ def sign_up():
             db.session.commit()
             login_user(new_user, remember=True)
             return redirect(url_for('views.home'))
-    return render_template("sign_up.html", user=current_user)
-
+        else:
+            return render_template("sign_up.html", user=current_user, message=message)
+    return render_template("sign_up.html", user=current_user, message='')
