@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
-from .models import Note
+from .models import Note, User
 from . import db
 import json
 import requests
@@ -17,13 +17,19 @@ def index():
 @views.route('/admin')
 @login_required
 def admin():
-    return render_template('admin.html', user=current_user)
+    notes = []
+    for note in Note.query.all():
+        notes.append(note.data)
+    return render_template('admin.html', user=current_user, notes=notes)
 
 
 @views.route('/home')
 @login_required
 def home():
-    return render_template('home.html', user=current_user)
+    notes = []
+    for note in Note.query.all():
+        notes.append(note.data)
+    return render_template('home.html', user=current_user, notes=notes)
 
 
 @views.route('/show_task')
@@ -40,7 +46,7 @@ def send_task():
         if len(note) < 1:
             flash('Введите задачу.', category='error')
         else:
-            new_note = Note(data=note, user_id=current_user.id)
+            new_note = Note(data=note, user_id=current_user.id, status='In progress')
             db.session.add(new_note)
             db.session.commit()
     return render_template('send_task.html', user=current_user)
@@ -55,3 +61,12 @@ def contacts():
 def contacts_login():
     return render_template('contacts-login.html', user=current_user)
 
+
+@views.route('/users_list', methods=['GET', 'POST'])
+def users_list():
+    users = []
+    for user in User.query.all():
+        users.append(user.first_name)
+    if request.method == 'POST':
+        pass
+    return render_template('users_list.html', user=current_user, users=users)
