@@ -1,11 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from os import path
+import os
 from dotenv import load_dotenv
 from flask_login import LoginManager
 
 
 db = SQLAlchemy()
+load_dotenv()
 
 
 def create_app():
@@ -30,6 +31,6 @@ def create_app():
 
 
 def create_database(app):
-    if not path.exists(f'website/{os.getenv("DB_NAME")}'):
+    if not os.path.exists(f'website/{os.getenv("DB_NAME")}'):
         db.create_all(app=app)
         print('Created Database!')
