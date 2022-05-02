@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import User, Admin
+from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -8,28 +8,31 @@ from flask_login import login_user, login_required, logout_user, current_user
 auth = Blueprint('auth', __name__)
 
 
+def check_user_login(user, password):
+    if check_password_hash(user.password, password):
+        login_user(user, remember=True)
+        if not user.isAdmin:
+            return "user"
+        else:
+            return "admin"
+    return "Неверный пароль. Попробуйте ещё раз."
+
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        admin = Admin.query.filter_by(email=email).first()
         user = User.query.filter_by(email=email).first()
+        message = "Пользователь не найден."
         if user:
-            if check_password_hash(user.password, password):
-                login_user(user, remember=True)
+            message = check_user_login(user, password)
+            if message == "user":
                 return redirect(url_for('views.home'))
-            else:
-                flash('Неверный пароль. Попробуйте ещё раз.', category='error')
-        elif admin:
-            if check_password_hash(admin.password, password):
-                login_user(admin, remember=True)
+            if message == "admin":
                 return redirect(url_for('views.admin'))
-            else:
-                flash('Неверный пароль. Попробуйте ещё раз.', category='error')
-        else:
-            flash('Пользователь не найден.', category='error')
-    return render_template("login.html", user=current_user)
+        return render_template("login.html", user=current_user, message=message)
+    return render_template("login.html", user=current_user, message='')
 
 
 @auth.route('/logout')
@@ -39,7 +42,7 @@ def logout():
     return redirect(url_for('views.index'))
 
 
-def check_user(user, email, first_name, password1, password2):
+def check_user_sign_up(user, email, first_name, password1, password2):
     if user:
         return "Пользователь с такой почтой уже существует."
     elif len(email) < 4:
@@ -62,7 +65,7 @@ def sign_up():
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
         user = User.query.filter_by(email=email).first()
-        message = check_user(user, email, first_name, password1, password2)
+        message = check_user_sign_up(user, email, first_name, password1, password2)
         if message == "ok":
             new_user = User(email=email,
                             password=generate_password_hash(password1, method='sha256'),
