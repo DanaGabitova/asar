@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 from .models import Note, User
 from . import db
@@ -38,18 +38,29 @@ def show_task():
     return render_template('show_task.html', user=current_user)
 
 
+def check_task(description, coordinates):
+    if len(coordinates) == 0:
+        return 'Введите координаты.'
+    if len(description) == 0:
+        return 'Введите проблему.'
+    return "ok"
+
+
 @views.route('/send_task', methods=['GET', 'POST'])
 @login_required
 def send_task():
     if request.method == 'POST':
-        note = request.form.get('note')
-        if len(note) < 1:
-            flash('Введите задачу.', category='error')
-        else:
-            new_note = Note(data=note, user_id=current_user.id, status='In progress')
+        description = request.form.get('description')
+        coordinates = request.form.get('coordinates')
+        message = check_task(description, coordinates)
+        if message == "ok":
+            new_note = Note(coordinates=coordinates, description=description, status='In progress',
+                            user_id=current_user.id)
             db.session.add(new_note)
             db.session.commit()
-    return render_template('send_task.html', user=current_user)
+            return redirect(url_for('views.home'))
+        return render_template('send_task.html', user=current_user, message=message)
+    return render_template('send_task.html', user=current_user, message='')
 
 
 @views.route('/contacts')
