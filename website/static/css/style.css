@@ -189,6 +189,12 @@ div.login-form {
 	width: 60%;
 }
 
+div.note-block {
+	margin-top: 50px;
+	margin-left: 220px;
+	width: 60%;
+}
+
 div.exit-btn input {
 	position: absolute;
 	right: 120px;

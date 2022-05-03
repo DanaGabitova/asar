@@ -43,11 +43,20 @@ Home
 
 {% block content %}
 <div class="note-block">
-	<form method="POST">
-		<div class="note-area">
-			<textarea name="note" id="note" class="form-control"></textarea>
-		</div>
-		<button type="submit" class="add-btn">Отправить</button>
-	</form>
+    <center>
+        <h1>Отправить проблему</h1>
+    </center>
+    <form method="POST">
+        <div>
+            <input type="text" class="form-control" id="coordinates" name="email" placeholder="Введите координаты"/>
+        </div>
+        <div class="note-area">
+            <textarea name="description" id="description" class="form-control"
+                      placeholder="Введите описание проблемы"></textarea>
+        </div>
+        <button type="submit" class="form-send-task-button">Отправить</button>
+    </form>
+    <br>
+    <p style="color: red;">{{ message }}</p>
 </div>
 {% endblock %}
