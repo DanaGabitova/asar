@@ -2,8 +2,6 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 from .models import Note, User
 from . import db
-import json
-import requests
 
 
 views = Blueprint('views', __name__)
@@ -32,13 +30,25 @@ def home():
     return render_template('home.html', user=current_user, notes=notes)
 
 
+def check_task_show(photo):
+    if not photo:
+        return "Вставьте фотографию в качестве доказательства."
+    if not photo.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+        return "Вставьте файл формата фотографии."
+    return "ok"
+
+
 @views.route('/show_task')
 @login_required
 def show_task():
-    return render_template('show_task.html', user=current_user)
+    photo = request.form.get('description')
+    message = check_task_show(photo)
+    if message == "ok":
+        return render_template('show_task.html', user=current_user, message=message)
+    return render_template('show_task.html', user=current_user, message='')
 
 
-def check_task(description, coordinates):
+def check_task_send(description, coordinates):
     if len(coordinates) == 0:
         return 'Введите координаты.'
     if len(description) == 0:
@@ -52,7 +62,7 @@ def send_task():
     if request.method == 'POST':
         description = request.form.get('description')
         coordinates = request.form.get('coordinates')
-        message = check_task(description, coordinates)
+        message = check_task_send(description, coordinates)
         if message == "ok":
             new_note = Note(coordinates=coordinates, description=description, status='In progress',
                             user_id=current_user.id)
