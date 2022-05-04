@@ -17,7 +17,7 @@ def index():
 def admin():
     notes = []
     for note in Note.query.all():
-        notes.append(note.data)
+        notes.append(note.description)
     return render_template('admin.html', user=current_user, notes=notes)
 
 
@@ -26,7 +26,7 @@ def admin():
 def home():
     notes = []
     for note in Note.query.all():
-        notes.append(note.data)
+        notes.append(note.description)
     return render_template('home.html', user=current_user, notes=notes)
 
 
