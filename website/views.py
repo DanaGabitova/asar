@@ -43,9 +43,12 @@ def check_task_show(photo):
 def show_task():
     photo = request.form.get('description')
     message = check_task_show(photo)
+    notes = []
+    for note in Note.query.all():
+        notes.append(note.description)
     if message == "ok":
-        return render_template('show_task.html', user=current_user, message=message)
-    return render_template('show_task.html', user=current_user, message='')
+        return render_template('show_task.html', user=current_user, notes=notes, message=message)
+    return render_template('show_task.html', user=current_user, notes=notes, message='')
 
 
 def check_task_send(description, coordinates):

@@ -47,7 +47,7 @@ Home
 </center>
 {% for note in user.notes %}
 <li class="list-group-item">
-    {{ loop.index }} | {{ note.data }}
+    {{ loop.index }} | {{ note[loop.index0] }}
 </li>
 {% endfor %}
 
