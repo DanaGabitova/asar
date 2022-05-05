@@ -51,6 +51,7 @@ Home
 </li>
 {% endfor %}
 
+{% if {{ isAdmin }} %}
 <div class="solve-note-block">
     <center>
         <h1>Решить проблему</h1>
@@ -60,13 +61,14 @@ Home
             <input type="text" class="form-control" id="task-id" name="task-id" placeholder="Введите id проблемы"/>
         </div>
         <div class="mb-3">
-            <label for="formFile" class="form-label">Вставьте фотографию в качестве доказательства решения проблемы</label>
-            <input class="form-control" type="file" id="formFile">
+            <label for="photo" class="form-label">Вставьте фотографию в качестве доказательства решения проблемы</label>
+            <input class="form-control" type="file" id="photo" name="photo">
         </div>
         <button type="submit" class="form-send-task-button">Отправить</button>
     </form>
     <br>
     <p style="color: red;">{{ message }}</p>
 </div>
+{{% endif %}}
 
 {% endblock %}

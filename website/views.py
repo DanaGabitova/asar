@@ -30,25 +30,35 @@ def home():
     return render_template('home.html', user=current_user, notes=notes)
 
 
-def check_task_show(photo):
+def check_task_show(photo, task_id, notes):
     if not photo:
         return "Вставьте фотографию в качестве доказательства."
     if not photo.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
         return "Вставьте файл формата фотографии."
+    if not task_id <= len(notes):
+        return "Введите id проблемы корректно."
     return "ok"
 
 
 @views.route('/show_task')
 @login_required
 def show_task():
-    photo = request.form.get('description')
-    message = check_task_show(photo)
     notes = []
     for note in Note.query.all():
         notes.append(note.description)
-    if message == "ok":
-        return render_template('show_task.html', user=current_user, notes=notes, message=message)
-    return render_template('show_task.html', user=current_user, notes=notes, message='')
+
+    if request.method == 'POST':
+        photo = request.form.get('photo')
+        task_id = int(request.form.get('task-id'))
+        message = check_task_show(photo, task_id, notes)
+        if message == "ok":
+            updated_note = notes[task_id - 1].status = 'pending'
+            db.session.remove(notes[task_id - 1])
+            db.session.add(updated_note)
+            db.session.commit()
+        return render_template('show_task.html', user=current_user, notes=notes, message=message,
+                               isAdmin=current_user.isAdmin)
+    return render_template('show_task.html', user=current_user, notes=notes, message='', isAdmin=current_user.isAdmin)
 
 
 def check_task_send(description, coordinates):
