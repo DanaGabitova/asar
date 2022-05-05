@@ -1,13 +1,21 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import User
-from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
+from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from . import db
+from .models import User
 
 
 auth = Blueprint('auth', __name__)
 
 
+# проверка формы авторизации пользователя.
+# в качестве результата работы функции возвращаем сообщение,
+# которое может содержать в себе три значения:
+# user(пользователь в будущем не сможет решать проблемы),
+# admin(пользователь является организацией, которая сможет решать проблемы)
+# и сообщение об ошибке(пользователь ввел неверный пароль).
+# вариант с несуществующим аккаунтом проверяется до входа в функцию проверки.
 def check_user_login(user, password):
     if check_password_hash(user.password, password):
         login_user(user, remember=True)
@@ -24,6 +32,8 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
+        # заранее устанавливаем переменной message сообщение о том,
+        # что аккаунта с данной почтой не существует.
         message = "Пользователь не найден."
         if user:
             message = check_user_login(user, password)
@@ -31,6 +41,7 @@ def login():
                 return redirect(url_for('views.home'))
             if message == "admin":
                 return redirect(url_for('views.admin'))
+        # в качестве ошибки передаем в html-файл значение переменной message.
         return render_template("login.html", user=current_user, message=message)
     return render_template("login.html", user=current_user, message='')
 
@@ -42,6 +53,12 @@ def logout():
     return redirect(url_for('views.index'))
 
 
+# проверка формы регистрации пользователя.
+# в качестве результата работы функции возвращаем сообщение,
+# которое может содержать в себе шесть значений:
+# пять видов ошибок(таких как длина почты, пароля и тп)
+# и строку "ok", которая означает, что данные, введеные пользователем,
+# подходят для создания аккаунта.
 def check_user_sign_up(user, email, first_name, password1, password2):
     if user:
         return "Пользователь с такой почтой уже существует."
@@ -67,11 +84,14 @@ def sign_up():
         user = User.query.filter_by(email=email).first()
         message = check_user_sign_up(user, email, first_name, password1, password2)
         if message == "ok":
+            # создание нового аккаунта, на основе данных, введеных пользователем.
+            # пароль хэшируем методом sha256.
             new_user = User(email=email,
                             password=generate_password_hash(password1, method='sha256'),
                             first_name=first_name,
                             last_name=last_name,
                             ban=False)
+            # добавляем новый аккаунт в базу данных.
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)

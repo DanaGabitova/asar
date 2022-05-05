@@ -1,6 +1,7 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import os
 from dotenv import load_dotenv
 from flask_login import LoginManager
 
@@ -11,8 +12,10 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
+
     app.config['SECRET_KEY'] = f'{os.getenv("SECRET_KEY")}'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.getenv("DB_NAME")}'
+
     db.init_app(app)
     from .views import views
     from .auth import auth
@@ -33,4 +36,3 @@ def create_app():
 def create_database(app):
     if not os.path.exists(f'website/{os.getenv("DB_NAME")}'):
         db.create_all(app=app)
-        print('Created Database!')
