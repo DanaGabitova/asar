@@ -10,6 +10,9 @@
 
 <h4 align="center">Cсылка на сайт: https://asar-almaty.herokuapp.com </h4>
 
+<h4 align="center">Ссылки на API или дополнительную документацию: Яндекс Карты
+https://yandex.ru/dev/maps/jsapi/doc/2.1/quick-start/index.html?from=jsapi</h4>
+
 <h3 align="center">Даты:</h3>
 
 > ##### 27.03.2022 - начать дизайн сайта 
