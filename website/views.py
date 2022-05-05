@@ -86,6 +86,11 @@ def send_task():
     return render_template('send_task.html', user=current_user, message='')
 
 
+@views.route('/about_us', methods=['GET'])
+def about_us():
+    return render_template('geo_object_collection.html', user=current_user)
+
+
 @views.route('/contacts')
 def contacts():
     return render_template('contacts.html', user=current_user)
