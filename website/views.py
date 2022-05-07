@@ -45,12 +45,12 @@ def check_task_show(photo, task_id, notes):
     return "ok"
 
 
-@views.route('/show_task')
+@views.route('/show_task', methods=['GET', 'POST'])
 @login_required
 def show_task():
     notes = []
     for note in Note.query.all():
-        notes.append(note.description)
+        notes.append([note.description, note.status])
 
     if request.method == 'POST':
         photo = request.form.get('photo')
