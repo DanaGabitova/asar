@@ -8,6 +8,8 @@
 
 <h3 align="center">Запуск кода с файла "website/main.py"</h3>
 
+<h3 align="center">Версия питона 3.9</h3>
+
 <h4 align="center">Cсылка на сайт: https://asar-almaty.herokuapp.com </h4>
 
 <h4 align="center">Ссылки на API или дополнительную документацию: Яндекс Карты
