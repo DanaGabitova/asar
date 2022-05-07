@@ -81,6 +81,11 @@ def sign_up():
         last_name = request.form.get('lastName')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
+        isAdmin = request.form.get('isAdmin')
+        if isAdmin:
+            isAdmin = True
+        else:
+            isAdmin = False
         user = User.query.filter_by(email=email).first()
         message = check_user_sign_up(user, email, first_name, password1, password2)
         if message == "ok":
@@ -90,6 +95,7 @@ def sign_up():
                             password=generate_password_hash(password1, method='sha256'),
                             first_name=first_name,
                             last_name=last_name,
+                            isAdmin=isAdmin,
                             ban=False)
             """добавляем новый аккаунт в базу данных."""
             db.session.add(new_user)
