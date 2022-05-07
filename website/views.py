@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, AnonymousUserMixin
+
 from .models import Note, User
 from . import db
 
@@ -9,26 +10,46 @@ views = Blueprint('views', __name__)
 
 @views.route('/')
 def index():
+    """
+    главная страница для всех
+    незарегистрированных пользователей.
+    """
+
     return render_template('index.html', user=current_user)
 
 
 @views.route('/about')
 def about():
+    """страница с картой с проблемами."""
+
     return render_template('about.html', user=current_user)
 
 
 @views.route('/admin')
 @login_required
 def admin():
-    notes = []
-    for note in Note.query.all():
-        notes.append(note.description)
-    return render_template('admin.html', user=current_user, notes=notes)
+    """
+    страница для админов
+    на ней можно увидеть заявки, отправленные
+    всеми пользователями и всех пользователей.
+    """
+
+    if current_user.isAdmin:
+        notes = []
+        for note in Note.query.all():
+            notes.append(note.description)
+        return render_template('admin.html', user=current_user, notes=notes)
+    return redirect(url_for('.home'))
 
 
 @views.route('/home')
 @login_required
 def home():
+    """
+    главная страница для всех
+    зарегистрированных пользователей.
+    """
+
     notes = []
     for note in Note.query.all():
         notes.append(note.description)
@@ -36,6 +57,11 @@ def home():
 
 
 def check_task_show(photo, task_id, notes):
+    """
+    функция для проверки формы
+    для решения проблемы.
+    """
+
     if not photo:
         return "Вставьте фотографию в качестве доказательства."
     if not photo.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
@@ -48,11 +74,21 @@ def check_task_show(photo, task_id, notes):
 @views.route('/show_task', methods=['GET', 'POST'])
 @login_required
 def show_task():
-    notes = []
+    """
+    страница для показа всех проблем и отправки
+    формы для их решений для админов.
+    """
+
     full_notes = []
+    notes = []
+    """
+    массивы для полного списка проблем(notes)
+    и для описаний и статуса проблем().
+    """
+
     for note in Note.query.all():
-        notes.append([note.description, note.status])
         full_notes.append(note)
+        notes.append([note.description, note.status])
 
     if request.method == 'POST':
         photo = request.form.get('photo')
@@ -73,6 +109,11 @@ def show_task():
 
 
 def check_task_send(description, coordinates):
+    """
+    функция для проверки формы
+    для отправки проблемы.
+    """
+
     if len(coordinates) == 0:
         return 'Введите координаты.'
     if len(description) == 0:
@@ -83,6 +124,8 @@ def check_task_send(description, coordinates):
 @views.route('/send_task', methods=['GET', 'POST'])
 @login_required
 def send_task():
+    """страница для отправки проблемы."""
+
     if request.method == 'POST':
         description = request.form.get('description')
         coordinates = request.form.get('coordinates')
@@ -99,19 +142,29 @@ def send_task():
 
 @views.route('/contacts')
 def contacts():
+    """страница для показа контактов для
+    незарегистрированных пользователей."""
+
     return render_template('contacts.html', user=current_user)
 
 
 @views.route('/contacts-login')
 def contacts_login():
+    """страница для показа контактов для
+    зарегистрированных пользователей."""
+
     return render_template('contacts-login.html', user=current_user)
 
 
 @views.route('/users_list', methods=['GET', 'POST'])
 def users_list():
-    users = []
-    for user in User.query.all():
-        users.append(user.first_name)
-    if request.method == 'POST':
-        pass
-    return render_template('users_list.html', user=current_user, users=users)
+    """страница со списком всех пользователей для админов."""
+
+    if isinstance(current_user, AnonymousUserMixin):
+        return redirect(url_for('.index'))
+    if current_user.isAdmin:
+        users = []
+        for user in User.query.all():
+            users.append(user.first_name)
+        return render_template('users_list.html', user=current_user, users=users)
+    return redirect(url_for('.home'))
