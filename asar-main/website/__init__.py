@@ -2,8 +2,8 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from dotenv import load_dotenv
 from flask_login import LoginManager
+from dotenv import load_dotenv
 
 
 db = SQLAlchemy()
@@ -34,5 +34,6 @@ def create_app():
 
 
 def create_database(app):
+    """создание базы данных, если ее не существует"""
     if not os.path.exists(f'website/{os.getenv("DB_NAME")}'):
         db.create_all(app=app)
