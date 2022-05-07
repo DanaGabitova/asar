@@ -12,6 +12,11 @@ def index():
     return render_template('index.html', user=current_user)
 
 
+@views.route('/about')
+def about():
+    return render_template('about.html', user=current_user)
+
+
 @views.route('/admin')
 @login_required
 def admin():
