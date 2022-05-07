@@ -49,18 +49,24 @@ def check_task_show(photo, task_id, notes):
 @login_required
 def show_task():
     notes = []
+    full_notes = []
     for note in Note.query.all():
         notes.append([note.description, note.status])
+        full_notes.append(note)
 
     if request.method == 'POST':
         photo = request.form.get('photo')
         task_id = int(request.form.get('task-id'))
         message = check_task_show(photo, task_id, notes)
         if message == "ok":
-            updated_note = notes[task_id - 1].status = 'pending'
-            db.session.remove(notes[task_id - 1])
+            note = full_notes[task_id - 1]
+            updated_note = note
+            updated_note.status = 'pending'
+            db.session.delete(note)
             db.session.add(updated_note)
             db.session.commit()
+            return render_template('show_task.html', user=current_user, notes=notes, message='',
+                                   isAdmin=current_user.isAdmin)
         return render_template('show_task.html', user=current_user, notes=notes, message=message,
                                isAdmin=current_user.isAdmin)
     return render_template('show_task.html', user=current_user, notes=notes, message='', isAdmin=current_user.isAdmin)

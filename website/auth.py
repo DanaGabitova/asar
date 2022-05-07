@@ -89,7 +89,6 @@ def sign_up():
         user = User.query.filter_by(email=email).first()
         message = check_user_sign_up(user, email, first_name, password1, password2)
         if message == "ok":
-            # print("--------")
             """создание нового аккаунта, на основе данных, введеных пользователем.
             пароль хэшируем методом sha256."""
             new_user = User(email=email,
@@ -98,7 +97,6 @@ def sign_up():
                             last_name=last_name,
                             isAdmin=isAdmin,
                             ban=False)
-            # print("=======")
             """добавляем новый аккаунт в базу данных."""
             db.session.add(new_user)
             db.session.commit()
