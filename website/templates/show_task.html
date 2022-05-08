@@ -45,9 +45,12 @@ Home
 <center>
     <h1>My tasks</h1>
 </center>
+<li class="list-group-item">
+    id проблемы | Описание | Координаты проблемы | Статус проблемы
+</li>
 {% for note in user.notes %}
 <li class="list-group-item">
-    {{ loop.index }} | {{ notes[loop.index0][0]}} | {{ notes[loop.index0][1] }}
+    {{ loop.index }} | {{ notes[loop.index0][0]}} | {{ notes[loop.index0][1] }} | {{ notes[loop.index0][2] }}
 </li>
 {% endfor %}
 

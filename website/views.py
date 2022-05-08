@@ -88,7 +88,7 @@ def show_task():
 
     for note in Note.query.all():
         full_notes.append(note)
-        notes.append([note.description, note.status])
+        notes.append([note.description, note.coordinates, note.status])
 
     if request.method == 'POST':
         photo = request.form.get('photo')
